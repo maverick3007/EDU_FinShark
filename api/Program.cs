@@ -36,11 +36,11 @@ builder.Services.AddSwaggerGen(option =>
             {
                 Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
-            new string[]{}
+            new string[] { }
         }
     });
 });
@@ -52,27 +52,32 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+        .Replace("${DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST"))
+        .Replace("${DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
+        .Replace("${DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
+        .Replace("${DB_PASSWORD}", Environment.GetEnvironmentVariable("DB_PASSWORD")));
+    
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 12;
-})
-.AddEntityFrameworkStores<ApplicationDBContext>();
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 12;
+    })
+    .AddEntityFrameworkStores<ApplicationDBContext>();
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme =
-    options.DefaultChallengeScheme =
-    options.DefaultForbidScheme =
-    options.DefaultScheme =
-    options.DefaultSignInScheme =
-    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme =
+            options.DefaultForbidScheme =
+                options.DefaultScheme =
+                    options.DefaultSignInScheme =
+                        options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -99,6 +104,29 @@ builder.Services.AddHttpClient<IFMPService, FMPService>();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<ApplicationDBContext>();
+
+    try
+    {
+        if (context.Database.CanConnect())
+        {
+            logger.LogInformation("Database connection successful");
+        }
+        else
+        {
+            logger.LogWarning("Database connection failed");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while checking the database connection");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -109,16 +137,16 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(x => x
-     .AllowAnyMethod()
-     .AllowAnyHeader()
-     .AllowCredentials()
-      //.WithOrigins("https://localhost:44351))
-      .SetIsOriginAllowed(origin => true));
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    //.WithOrigins("https://localhost:44351))
+    .SetIsOriginAllowed(origin => true));
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
 
+app.Run();
