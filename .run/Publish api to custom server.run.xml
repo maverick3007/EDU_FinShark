@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish api to custom server" type="DotNetPublishAndUpload" factoryName="Publish to custom server">
+    <riderPublish configuration="Release" platform="Any CPU" produce_single_file="true" runtime="linux-x64" self_contained="true" server_id="7e94fe79-839c-4424-b6a4-3acb0c928ce5" serverName="162.55.188.150 yoda" target_framework="net8.0" uuid_high="9075175134032513183" uuid_low="-4970179104873725514" />
+    <method v="2" />
+  </configuration>
+</component>
