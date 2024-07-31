@@ -1,0 +1,29 @@
+/* Hero.css */
+
+#hero {
+    /* Add any necessary styles for the hero section */
+}
+
+.container {
+    /* Ensure the container takes up the necessary space */
+}
+
+.video-container {
+    /* Optional: Add any specific styling for the video container */
+}
+
+.text-center {
+    text-align: center;
+}
+
+.lg\\:text-left {
+    @apply lg:text-left;
+}
+
+.bg-lightGreen {
+    background-color: #8bc34a; /* Replace with your specific color */
+}
+
+.hover\\:opacity-70:hover {
+    opacity: 0.7;
+}

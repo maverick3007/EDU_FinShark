@@ -20,8 +20,9 @@ const Navbar = (props: Props) => {
     <nav className="relative container mx-auto p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-20">
-          <div className="hidden font-bold lg:flex">
-            <Link to="/" className="text-black hover:text-darkBlue">
+          <div className="flex items-center space-x-6">
+            <img src="logo.png" alt="Logo" className="h-10"/> {/* Adjust the height as needed */}
+            <Link to="/" className="text-black hover:text-darkBlue font-bold hidden lg:flex">
               {t('home')}
             </Link>
           </div>
@@ -68,7 +69,6 @@ const Navbar = (props: Props) => {
               {t('register')}
             </Link>
             <div className="relative">
-              <label htmlFor="language"> {t('lang')}: </label>
               <select
                 className="px-8 py-3 font-bold rounded text-white bg-lightGreen hover:opacity-70"
                 name="language"
